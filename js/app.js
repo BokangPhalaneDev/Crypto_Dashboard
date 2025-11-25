@@ -214,3 +214,10 @@ async function executeSell() {
 // Make functions globally available
 window.updateUI = updateUI;
 window.updateTransactionList = updateTransactionList;
+
+// Make new chart functions globally available
+window.startPriceUpdates = startPriceUpdates;
+window.stopPriceUpdates = stopPriceUpdates;
+window.updateChartWithLiveData = updateChartWithLiveData;
+
+// Add real-time price display to CSS (automatically handled by chart.js)

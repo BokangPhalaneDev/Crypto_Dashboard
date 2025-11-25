@@ -1,4 +1,4 @@
-// Wallet connection functionality
+// Wallet connection functionality with real-time data
 async function connectWallet() {
     if (!window.walletConnected) {
         if (typeof window.ethereum !== 'undefined') {
@@ -14,9 +14,9 @@ async function connectWallet() {
                 const contractsInitialized = await window.initializeContracts(window.ethereum);
                 
                 if (contractsInitialized) {
-                    // Get real XAU balance
+                    // Get real XAU balance and price
                     const xauBalance = await window.getXauBalance(userAddress);
-                    const xauPrice = await window.getXauPrice();
+                    const xauPrice = await window.getXauPrice(); // REAL price from Chainlink
                     
                     window.walletConnected = true;
                     window.connectWalletBtn.textContent = 'Disconnect';
@@ -33,7 +33,17 @@ async function connectWallet() {
                         <p><strong>XAU Balance:</strong> ${xauBalance.toFixed(4)} tokens</p>
                         <p><strong>Current Price:</strong> $${xauPrice.toFixed(2)}</p>
                         <p><strong>Total Value:</strong> $${(xauBalance * xauPrice).toFixed(2)}</p>
+                        <p><small>Prices update every 30 seconds</small></p>
                     `;
+                    
+                    // Start real-time price updates
+                    setTimeout(() => {
+                        if (window.startPriceUpdates) {
+                            window.startPriceUpdates();
+                        }
+                    }, 1000);
+                    
+                    console.log('Wallet connected with real data');
                 } else {
                     // Fallback to mock if contract initialization fails
                     connectWalletMock();
@@ -59,6 +69,7 @@ function connectWalletMock() {
     window.walletAddressEl.textContent = '0x1a2b3c4d...Mock';
     window.walletAddressEl.style.display = 'block';
     
+    // Use realistic mock data
     window.balance = 1250.75;
     window.profitLoss = 150.25;
     window.updateUI();
@@ -66,7 +77,10 @@ function connectWalletMock() {
     window.portfolioDetails.innerHTML = `
         <p><strong>XAU:</strong> 12.5 tokens</p>
         <p><strong>Value:</strong> $1250.75</p>
+        <p><small>Mock data - connect real wallet for live prices</small></p>
     `;
+    
+    console.log('Wallet connected with mock data');
 }
 
 function disconnectWallet() {
@@ -77,6 +91,13 @@ function disconnectWallet() {
     window.profitLoss = 0;
     window.updateUI();
     window.portfolioDetails.innerHTML = '<p>Connect your wallet to view portfolio details</p>';
+    
+    // Stop price updates
+    if (window.stopPriceUpdates) {
+        window.stopPriceUpdates();
+    }
+    
+    console.log('Wallet disconnected');
 }
 
 // Make function globally available
